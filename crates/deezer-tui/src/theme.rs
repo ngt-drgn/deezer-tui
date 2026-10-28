@@ -16,6 +16,7 @@ pub enum ThemeId {
     DarkRed,
     DarkYellow,
     DarkBlue,
+    CatppuccinMocha,
 }
 
 impl ThemeId {
@@ -31,6 +32,7 @@ impl ThemeId {
         ThemeId::DarkRed,
         ThemeId::DarkYellow,
         ThemeId::DarkBlue,
+        ThemeId::CatppuccinMocha,
     ];
 
     pub fn label(self) -> &'static str {
@@ -46,6 +48,7 @@ impl ThemeId {
             ThemeId::DarkRed => "Dark Red",
             ThemeId::DarkYellow => "Dark Yellow",
             ThemeId::DarkBlue => "Dark Blue",
+            ThemeId::CatppuccinMocha => "Catppuccin Mocha",
         }
     }
 
@@ -63,6 +66,7 @@ impl ThemeId {
             ThemeId::DarkRed => "dark_red",
             ThemeId::DarkYellow => "dark_yellow",
             ThemeId::DarkBlue => "dark_blue",
+            ThemeId::CatppuccinMocha => "catppuccin_mocha",
         }
     }
 
@@ -80,6 +84,7 @@ impl ThemeId {
             "dark_red" => Some(ThemeId::DarkRed),
             "dark_yellow" => Some(ThemeId::DarkYellow),
             "dark_blue" => Some(ThemeId::DarkBlue),
+            "catppuccin_mocha" => Some(ThemeId::CatppuccinMocha),
             _ => None,
         }
     }
@@ -95,6 +100,37 @@ thread_local! {
 pub struct Theme;
 
 impl Theme {
+    /// Official Catppuccin Mocha palette for the new theme. Ordered to keep all
+    /// named colors available for styling while prioritizing Mauve as the main UI accent.
+    fn catppuccin_mocha_palette() -> [Color; 24] {
+        [
+            Color::Rgb(203, 166, 247), // mauve
+            Color::Rgb(245, 224, 220), // rose
+            Color::Rgb(242, 205, 205), // flamingo
+            Color::Rgb(245, 194, 231), // pink
+            Color::Rgb(235, 160, 172), // maroon
+            Color::Rgb(243, 139, 168), // red
+            Color::Rgb(250, 179, 135), // peach
+            Color::Rgb(249, 226, 175), // yellow
+            Color::Rgb(166, 227, 161), // green
+            Color::Rgb(148, 226, 213), // teal
+            Color::Rgb(137, 220, 235), // sky
+            Color::Rgb(116, 199, 236), // sapphire
+            Color::Rgb(137, 180, 250), // blue
+            Color::Rgb(180, 190, 254), // lavender
+            Color::Rgb(205, 214, 244), // text
+            Color::Rgb(17, 17, 27),    // crust
+            Color::Rgb(30, 30, 46),    // base
+            Color::Rgb(24, 24, 37),    // mantle
+            Color::Rgb(49, 50, 68),    // surface0
+            Color::Rgb(69, 71, 90),    // surface1
+            Color::Rgb(88, 91, 112),   // surface2
+            Color::Rgb(108, 112, 134), // overlay0
+            Color::Rgb(127, 132, 156), // overlay1
+            Color::Rgb(147, 153, 178), // overlay2
+        ]
+    }
+
     /// Set the active theme.
     pub fn set(id: ThemeId) {
         CURRENT_THEME.with(|c| c.set(id));
@@ -152,6 +188,7 @@ impl Theme {
             ThemeId::DarkRed => Color::Rgb(220, 20, 60),
             ThemeId::DarkYellow => Color::Rgb(240, 200, 0),
             ThemeId::DarkBlue => Color::Rgb(60, 120, 255),
+            ThemeId::CatppuccinMocha => Self::catppuccin_mocha_palette()[0],
         }
     }
 
@@ -169,11 +206,15 @@ impl Theme {
             ThemeId::DarkRed => Color::Rgb(255, 68, 68),
             ThemeId::DarkYellow => Color::Rgb(255, 230, 100),
             ThemeId::DarkBlue => Color::Rgb(100, 160, 255),
+            ThemeId::CatppuccinMocha => Self::catppuccin_mocha_palette()[13],
         }
     }
 
     pub fn success() -> Color {
-        Color::Rgb(0, 204, 0)
+        match Self::current() {
+            ThemeId::CatppuccinMocha => Self::catppuccin_mocha_palette()[8],
+            _ => Color::Rgb(0, 204, 0),
+        }
     }
 
     pub fn bg() -> Color {
@@ -190,6 +231,7 @@ impl Theme {
             ThemeId::DarkRed => Color::Rgb(18, 18, 18),
             ThemeId::DarkYellow => Color::Rgb(18, 18, 18),
             ThemeId::DarkBlue => Color::Rgb(14, 16, 22),
+            ThemeId::CatppuccinMocha => Self::catppuccin_mocha_palette()[16],
         }
     }
 
@@ -207,6 +249,7 @@ impl Theme {
             ThemeId::DarkRed => Color::Rgb(30, 30, 30),
             ThemeId::DarkYellow => Color::Rgb(30, 30, 30),
             ThemeId::DarkBlue => Color::Rgb(22, 26, 36),
+            ThemeId::CatppuccinMocha => Self::catppuccin_mocha_palette()[17],
         }
     }
 
@@ -223,6 +266,7 @@ impl Theme {
             | ThemeId::DarkRed
             | ThemeId::DarkYellow => Color::Rgb(60, 60, 60),
             ThemeId::DarkBlue => Color::Rgb(50, 55, 75),
+            ThemeId::CatppuccinMocha => Self::catppuccin_mocha_palette()[21],
         }
     }
 
@@ -231,11 +275,17 @@ impl Theme {
     }
 
     pub fn text_color() -> Color {
-        Color::Rgb(230, 230, 230)
+        match Self::current() {
+            ThemeId::CatppuccinMocha => Self::catppuccin_mocha_palette()[14],
+            _ => Color::Rgb(230, 230, 230),
+        }
     }
 
     pub fn text_dim_color() -> Color {
-        Color::Rgb(140, 140, 140)
+        match Self::current() {
+            ThemeId::CatppuccinMocha => Self::catppuccin_mocha_palette()[22],
+            _ => Color::Rgb(140, 140, 140),
+        }
     }
 
     pub fn progress_fill() -> Color {
@@ -243,7 +293,10 @@ impl Theme {
     }
 
     pub fn progress_bg() -> Color {
-        Color::Rgb(50, 50, 50)
+        match Self::current() {
+            ThemeId::CatppuccinMocha => Self::catppuccin_mocha_palette()[19],
+            _ => Color::Rgb(50, 50, 50),
+        }
     }
 
     pub fn tab_active_color() -> Color {
@@ -321,6 +374,7 @@ impl Theme {
             ThemeId::Emerald | ThemeId::Amber | ThemeId::DarkOrange | ThemeId::DarkYellow => {
                 Color::Rgb(30, 30, 30)
             }
+            ThemeId::CatppuccinMocha => Color::Rgb(24, 24, 37),
             _ => Self::text_color(),
         };
         Style::default()
